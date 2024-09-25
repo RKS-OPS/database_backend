@@ -40,7 +40,6 @@
     "iconv-lite": "^0.4.24",
     "inherits": "^2.0.4",
     "ipaddr.js": "^1.9.1",
-    "js-yaml": "^4.1.0",
     "media-typer": "^0.3.0",
     "merge-descriptors": "^1.0.3",
     "methods": "^1.1.2",
@@ -84,8 +83,5 @@
     "swagger": "node ./swagger.js"
   },
   "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "swagger-autogen": "^2.23.7"
-  }
+  "license": "ISC"
 }
