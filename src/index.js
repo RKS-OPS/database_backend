@@ -2,44 +2,52 @@ const express = require("express");
 const app = express();
 const routes = require("./routes");
 const swaggerUi = require("swagger-ui-express");
-const fs = require("fs");
-const YAML = require("yaml");
 const OpenApiValidator = require("express-openapi-validator");
 const path = require("path");
+const SwaggerParser = require("swagger-parser");
 
-// Load your OpenAPI documentation (YAML format)
-const file = fs.readFileSync("./src/OpenAPIDocs/index.yaml", "utf8");
-// console.log("File content:", file);
-const swaggerDocument = YAML.parse(file);
-// console.log("Parsed document:", JSON.stringify(swaggerDocument, null, 2));
-// Serve Swagger UI
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const apiSpecPath = path.join(__dirname, "OpenAPIDocs", "index.yaml");
 
-// Middleware: Parse incoming JSON requests
-app.use(express.json());
+const startServer = async () => {
+  try {
+    // Load and resolve OpenAPI documentation
+    const swaggerDocument = await SwaggerParser.validate(apiSpecPath);
 
-// Load OpenAPI Validator
-app.use(
-  OpenApiValidator.middleware({
-    apiSpec: path.join(__dirname, "src", "OpenAPIDocs", "index.yaml"),
-    validateRequests: true,
-    validateResponses: true,
-  })
-);
-// Use routes
-app.use("/api", routes);
+    // Serve Swagger UI
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  // format error
-  res.status(err.status || 500).json({
-    message: err.message,
-    errors: err.errors,
-  });
-});
+    // Middleware: Parse incoming JSON requests
+    app.use(express.json());
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+    // Load OpenAPI Validator
+    app.use(
+      OpenApiValidator.middleware({
+        apiSpec: swaggerDocument, // Use the resolved document
+        validateRequests: true,
+        validateResponses: true,
+      })
+    );
+
+    // Use routes
+    app.use("/api", routes);
+
+    // Error handling middleware
+    app.use((err, req, res, next) => {
+      res.status(err.status || 500).json({
+        message: err.message,
+        errors: err.errors,
+      });
+    });
+
+    // Start the server
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("Failed to parse OpenAPI spec:", err);
+  }
+};
+
+// Initialize the server
+startServer();
