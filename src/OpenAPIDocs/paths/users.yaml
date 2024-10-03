@@ -1,6 +1,13 @@
 get:
   summary: Get all users
   operationId: getAllusers
+  parameters:
+    - in: query
+      name: name
+      required: false
+      schema:
+        type: string
+      description: Filter users by name (partial match)
   responses:
     "200":
       description: A list of users

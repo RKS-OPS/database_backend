@@ -5,6 +5,7 @@ const swaggerUi = require("swagger-ui-express");
 const OpenApiValidator = require("express-openapi-validator");
 const path = require("path");
 const SwaggerParser = require("swagger-parser");
+const cors = require("cors");
 
 const apiSpecPath = path.join(__dirname, "OpenAPIDocs", "index.yaml");
 
@@ -27,6 +28,8 @@ const startServer = async () => {
         validateResponses: true,
       })
     );
+    // remove this line, just for testing
+    app.use(cors({ origin: "http://localhost:3000" }));
 
     // Use routes
     app.use("/api", routes);
@@ -40,7 +43,7 @@ const startServer = async () => {
     });
 
     // Start the server
-    const PORT = process.env.PORT || 3000;
+    const PORT = process.env.PORT || 3001;
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
