@@ -6,6 +6,7 @@ const OpenApiValidator = require("express-openapi-validator");
 const path = require("path");
 const SwaggerParser = require("swagger-parser");
 const cors = require("cors");
+const db = require("./configs/postgres");
 
 const apiSpecPath = path.join(__dirname, "OpenAPIDocs", "index.yaml");
 
@@ -61,6 +62,15 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
+
+    // Test database connection
+    db.query("SELECT NOW()")
+      .then((res) => {
+        console.log("Connected, current time from DB:", res.rows[0]);
+      })
+      .catch((err) => {
+        console.error("Failed to execute test query", err);
+      });
   } catch (err) {
     console.error("Failed to parse OpenAPI spec:", err);
   }

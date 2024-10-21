@@ -33,7 +33,7 @@ const users = [
 
 exports.getAllUsers = (req, res) => {
   const { name } = req.query; // Extract the query string from the request query parameters
-  console.log("Query string:", name);
+  // console.log("Query string:", name);
 
   // If a query string is provided, filter users based on the 'name' containing the query string
   let filteredUsers = users;
