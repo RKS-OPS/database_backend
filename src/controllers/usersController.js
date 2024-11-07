@@ -1,3 +1,4 @@
+const db = require("../configs/postgres");
 const users = [
   {
     id: 1,
@@ -31,19 +32,32 @@ const users = [
   },
 ];
 
-exports.getAllUsers = (req, res) => {
-  const { name } = req.query; // Extract the query string from the request query parameters
-  // console.log("Query string:", name);
-
-  // If a query string is provided, filter users based on the 'name' containing the query string
-  let filteredUsers = users;
-  if (name) {
-    filteredUsers = users.filter((user) =>
-      user.name.toLowerCase().includes(name.toLowerCase())
-    );
+exports.getAllUsers = async (req, res) => {
+  const { name } = req.query;
+  try {
+    const result = await db.query("SELECT * FROM get_all_users($1)", [
+      name || null,
+    ]);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error("Error executing stored procedure:", error);
+    res.status(500).json({
+      status: "error",
+      message: "Failed to fetch users",
+    });
   }
+  // const { name } = req.query; // Extract the query string from the request query parameters
+  // // console.log("Query string:", name);
 
-  res.status(200).json(filteredUsers);
+  // // If a query string is provided, filter users based on the 'name' containing the query string
+  // let filteredUsers = users;
+  // if (name) {
+  //   filteredUsers = users.filter((user) =>
+  //     user.name.toLowerCase().includes(name.toLowerCase())
+  //   );
+  // }
+
+  // res.status(200).json(filteredUsers);
 };
 
 exports.createUser = (req, res) => {
