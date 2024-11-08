@@ -1,7 +1,8 @@
 // Get all projects
 exports.getAllProjects = (req, res) => {
   // Simulate fetching projects from database
-  res.send("List of all projects from the controller");
+  let data = [];
+  res.send(data);
 };
 
 // Create a new project
