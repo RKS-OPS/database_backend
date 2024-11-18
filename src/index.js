@@ -29,6 +29,23 @@ const startServer = async () => {
         validateResponses: true,
       })
     );
+  } catch (err) {
+    console.error("Failed to parse OpenAPI spec:", err);
+  }
+  try {
+    // Test database connection
+    db.query("SELECT NOW()")
+      .then((res) => {
+        console.log("Connected, current time from DB:", res.rows[0]);
+      })
+      .catch((err) => {
+        console.error("Failed to execute test query", err);
+      });
+  } catch (error) {
+    console.error("Failed to connect to the database:", error);
+  }
+
+  try {
     const allowedOrigins = [
       "http://localhost:3000",
       "https://database-frontend-test.vercel.app",
@@ -62,17 +79,8 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
-
-    // Test database connection
-    db.query("SELECT NOW()")
-      .then((res) => {
-        console.log("Connected, current time from DB:", res.rows[0]);
-      })
-      .catch((err) => {
-        console.error("Failed to execute test query", err);
-      });
-  } catch (err) {
-    console.error("Failed to parse OpenAPI spec:", err);
+  } catch (error) {
+    console.error("Failed to start the server:", error);
   }
 };
 

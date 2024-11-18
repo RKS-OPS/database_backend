@@ -29,3 +29,7 @@ post:
   responses:
     "201":
       description: user created
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/User.yaml"

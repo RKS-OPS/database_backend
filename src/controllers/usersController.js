@@ -3,31 +3,36 @@ const users = [
   {
     id: 1,
     name: "Wade Cooper",
-    avatar:
+    email: "wade@test.com",
+    image:
       "https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
   },
   {
     id: 2,
     name: "Arlene Mccoy",
-    avatar:
+    email: "Arlene@test.com",
+    image:
       "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
   },
   {
     id: 3,
     name: "Devon Webb",
-    avatar:
+    email: "Devon@test.com",
+    image:
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80",
   },
   {
     id: 4,
     name: "Tom Cook",
-    avatar:
+    email: "Tom@test.com",
+    image:
       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
   },
   {
     id: 5,
     name: "Tanya Fox",
-    avatar:
+    email: "Tanya@test.com",
+    image:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
   },
 ];
@@ -38,7 +43,7 @@ exports.getAllUsers = async (req, res) => {
     const result = await db.query("SELECT * FROM get_all_users($1)", [
       name || null,
     ]);
-    res.status(200).json(result.rows);
+    res.status(200).json(result.rows[0]);
   } catch (error) {
     console.error("Error executing stored procedure:", error);
     res.status(500).json({
@@ -60,13 +65,34 @@ exports.getAllUsers = async (req, res) => {
   // res.status(200).json(filteredUsers);
 };
 
-exports.createUser = (req, res) => {
-  const newUser = {
-    id: users.length + 1,
-    ...req.body,
-  };
-  users.push(newUser);
-  res.status(201).json(newUser);
+exports.createUser = async (req, res) => {
+  console.log("Request body:", req.body);
+  // check if the user already exists
+  const result = await db.query("SELECT * FROM employee WHERE email = $1", [
+    req.body.email,
+  ]);
+  const [existUser] = result.rows;
+  if (existUser) {
+    console.log("User already exists: 77", existUser);
+    return res.status(201).json(existUser);
+  } else {
+    if (!req.body.image) {
+      req.body.image =
+        "https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+    }
+    const newUser = await db.query(
+      "INSERT INTO employee (name, email, image) VALUES ($1, $2, $3) RETURNING *",
+      [req.body.name, req.body.email, req.body.image]
+    );
+    console.log("New user:", newUser.rows[0]);
+    res.status(201).json(newUser.rows[0]);
+  }
+  // const newUser = {
+  //   id: users.length + 1,
+  //   ...req.body,
+  // };
+  // users.push(newUser);
+  // res.status(201).json(newUser);
 };
 
 exports.getUserById = (req, res) => {

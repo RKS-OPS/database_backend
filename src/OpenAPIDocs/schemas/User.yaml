@@ -1,10 +1,13 @@
 type: object
 properties:
   id:
-    type: number
+    type: integer
   name:
     type: string
-  avatar:
+  email:
+    type: string
+  image:
     type: string
 required:
   - name
+  - email

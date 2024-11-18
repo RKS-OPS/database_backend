@@ -1,0 +1,48 @@
+type: object
+properties:
+  planviewId:
+    type: string
+  projectMinistry:
+    $ref: "#/components/schemas/enum/Ministry"
+  projectId:
+    type: string
+  projectName:
+    type: string
+  projectDescription:
+    type: string
+  phase:
+    type: string
+    enum:
+      - "Planning"
+      - "Implementation"
+      - "Conditional Closeout"
+      - "Close Out"
+      - "Completed"
+  status:
+    type: string
+    enum:
+      - "On Track"
+      - "Manageable"
+      - "On Hold"
+      - "Canceled"
+  requestedStartDate:
+    type: string
+    format: date-time
+  requestedFinishDate:
+    type: string
+    format: date-time
+  projectNotes:
+    type: array
+    items:
+      $ref: "#/components/schemas/Note"
+required:
+  - planviewId
+  - projectMinistry
+  - projectId
+  - projectName
+  - projectDescription
+  - phase
+  - status
+  - requestedStartDate
+  - requestedFinishDate
+  - projectNotes

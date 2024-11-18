@@ -1,0 +1,21 @@
+type: object
+properties:
+  id:
+    type: string
+  user:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+  description:
+    type: string
+  timestamp:
+    type: string
+    format: date-time
+required:
+  - id
+  - user
+  - description
+  - timestamp

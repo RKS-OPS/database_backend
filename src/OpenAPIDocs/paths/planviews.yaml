@@ -1,0 +1,12 @@
+get:
+  summary: Get all planviews
+  operationId: getAllPlanviews
+  responses:
+    "200":
+      description: A list of planview
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../schemas/Planviews.yaml"
