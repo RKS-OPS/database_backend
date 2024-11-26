@@ -1,0 +1,25 @@
+get:
+  summary: Get all organizations
+  operationId: getAllOrganizations
+  parameters:
+    - in: query
+      name: ministry
+      required: false
+      schema:
+        type: string
+      description: get all divisions for the ministry
+    - in: query
+      name: division
+      required: false
+      schema:
+        type: string
+      description: get all branches for the division
+  responses:
+    "200":
+      description: A list of ministry or division
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: string

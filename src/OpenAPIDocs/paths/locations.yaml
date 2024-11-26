@@ -1,0 +1,31 @@
+get:
+  summary: Get all locations
+  operationId: getAllLocations
+  parameters:
+    - in: query
+      name: name
+      required: false
+      schema:
+        type: string
+      description: Filter locations by name (case-insensitive)
+  responses:
+    "200":
+      description: A list of locations
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../schemas/Location.yaml"
+post:
+  summary: Create or update a address
+  operationId: upSertLocation
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/Location.yaml"
+  responses:
+    "201":
+      description: Location create or updated
