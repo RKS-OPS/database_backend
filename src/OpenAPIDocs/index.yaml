@@ -9,9 +9,15 @@ paths:
     $ref: "./paths/projects.yaml"
   /users:
     $ref: "./paths/users.yaml"
+  /locations:
+    $ref: "./paths/locations.yaml"
+  /organizations:
+    $ref: "./paths/organizations.yaml"
 components:
   schemas:
     Project:
       $ref: "./schemas/Project.yaml"
     User:
       $ref: "./schemas/User.yaml"
+    Location:
+      $ref: "./schemas/Location.yaml"

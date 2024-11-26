@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const projectRoutes = require("./projects");
-const usertRoutes = require("./users");
+const userRoutes = require("./users");
+const locationRoutes = require("./locations");
+const organizationRoutes = require("./organizations");
 
 router.get("/", (req, res) => {
   res.send("Hello from the /api endpoint!");
@@ -9,6 +11,7 @@ router.get("/", (req, res) => {
 
 // Register Routes
 router.use("/projects", projectRoutes);
-router.use("/users", usertRoutes);
-
+router.use("/users", userRoutes);
+router.use("/locations", locationRoutes);
+router.use("/organizations", organizationRoutes);
 module.exports = router;
