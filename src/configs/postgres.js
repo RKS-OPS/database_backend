@@ -8,9 +8,10 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT || 5432, // default port is 5432
-  ssl: {
-    rejectUnauthorized: false, // for local development only
-  },
+  ssl:false
+  // ssl: {
+  //   rejectUnauthorized: false, // for local development only
+  // },
 });
 
 // 連接成功時的回調

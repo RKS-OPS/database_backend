@@ -1,7 +1,16 @@
+const { getAllProjects } = require('../models/projects');
+
 // Get all projects
-exports.getAllProjects = (req, res) => {
-  // Simulate fetching projects from database
-  res.send("List of all projects from the controller");
+exports.getAllProjects = async(req, res) => {
+  try {
+    const projects = await getAllProjects(); // Call the model function
+    console.log('pro', projects);
+    res.json(projects); // Send the fetched data as JSON
+  } catch (err) {
+    console.error('Error in getAllProjects controller:', err.message);
+    res.status(500).send('Failed to fetch projects'); // Send error response
+  }
+  // res.send("List of all projects from the controller");
 };
 
 // Create a new project
