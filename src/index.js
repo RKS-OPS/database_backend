@@ -47,7 +47,8 @@ const startServer = async () => {
     app.use(cors(corsOptions));
 
     // Use routes
-    app.use("/api", routes);
+    // because the frontend use /api already to the Azure sign in auth route
+    app.use("/backend-api", routes);
 
     // Error handling middleware
     app.use((err, req, res, next) => {
