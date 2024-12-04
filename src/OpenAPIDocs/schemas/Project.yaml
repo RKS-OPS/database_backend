@@ -6,11 +6,9 @@ properties:
     type: string
   description:
     type: string
+    nullable: true
   status:
     type: string
-    enum:
-      - active
-      - inactive
+    nullable: true
 required:
   - name
-  - status

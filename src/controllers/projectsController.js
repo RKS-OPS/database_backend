@@ -1,14 +1,22 @@
-const { getAllProjects } = require('../models/projects');
+const { getAllProjects } = require("../models/projects");
 
 // Get all projects
-exports.getAllProjects = async(req, res) => {
+exports.getAllProjects = async (req, res) => {
   try {
     const projects = await getAllProjects(); // Call the model function
-    console.log('pro', projects);
-    res.json(projects); // Send the fetched data as JSON
+    const data = projects.map((p) => {
+      return {
+        id: p.out_jpd_id.toString(),
+        name: p.out_jpd_name,
+        description: p?.out_jpd_description,
+        status: p.out_jpd_current_project_status,
+      };
+    });
+    // console.log('data', data);
+    res.json(data); // Send the fetched data as JSON
   } catch (err) {
-    console.error('Error in getAllProjects controller:', err.message);
-    res.status(500).send('Failed to fetch projects'); // Send error response
+    console.error("Error in getAllProjects controller:", err.message);
+    res.status(500).send("Failed to fetch projects"); // Send error response
   }
   // res.send("List of all projects from the controller");
 };
