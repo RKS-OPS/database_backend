@@ -32,12 +32,12 @@ const users = [
   {
     id: 6,
     name: "Charles Zhang",
-    avatar: "https://i.postimg.cc/Njpp3S7j/charles.png",
+    avatar: "https://i.ibb.co/f0QTs9J/charles.png",
   },
   {
     id: 7,
     name: "Devesh Gupta",
-    avatar: "https://i.postimg.cc/T16LxQRt/Screenshot-2024-11-18-112632.png",
+    avatar: "https://i.ibb.co/B6ygD2G/devesh.png",
   },
 ];
 
