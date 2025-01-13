@@ -8,6 +8,12 @@ get:
       schema:
         type: string
       description: Filter locations by name (case-insensitive)
+    - in: query
+      name: address
+      required: false
+      schema:
+        type: string
+      description: Filter locations by address (case-insensitive)
   responses:
     "200":
       description: A list of locations
