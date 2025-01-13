@@ -14,15 +14,25 @@ const locations = [
 // Get all locations
 // filter by name
 exports.getAllLocations = (req, res) => {
-  const { name } = req.query;
-  if (!name) {
+  const { name, address } = req.query;
+  if (!name && !address) {
     return res.json(locations);
   }
   // partial match
-  const filteredLocations = locations.filter((l) =>
-    l.name.toLowerCase().includes(name.toLowerCase())
-  );
-  res.json(filteredLocations);
+  if (name) {
+    const filteredLocations = locations.filter((l) =>
+      l.name.toLowerCase().includes(name.toLowerCase())
+    );
+    return res.json(filteredLocations);
+  }
+
+  if (address) {
+    console.log("address", address);
+    const filteredLocations = locations.filter((l) =>
+      l.address.toLowerCase().includes(address.toLowerCase())
+    );
+    return res.json(filteredLocations);
+  }
 };
 
 exports.upSertLocation = (req, res) => {
