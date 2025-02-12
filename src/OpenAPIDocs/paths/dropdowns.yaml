@@ -1,0 +1,50 @@
+get:
+  summary: Get all dropdowns for the target frontend page
+  operationId: getAllOrganizations
+  parameters:
+    - in: query
+      name: moduleId
+      required: true
+      schema:
+        type: string
+      description: the module id of the frontend page. ex.Intake module id is 001
+    - in: query
+      name: pageType
+      required: true
+      schema:
+        type: string
+      description: the page type of the frontend page. ex createProject, editProject
+  responses:
+    "200":
+      description: All dropdowns for the target frontend page
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties:
+              type: array
+              items:
+                type: string
+          example:
+            {
+              "dropdownFieldName1": ["option1", "option2"],
+              "dropdownFieldName2": ["option1", "option2"],
+            }
+    "400":
+      description: Bad request. Occurs when `moduleId` or `pageType` is missing or invalid.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+          examples:
+            missingParams:
+              summary: Missing moduleId or pageType
+              value:
+                error: "moduleId and pageType are required"
+            invalidPageType:
+              summary: Invalid pageType provided
+              value:
+                error: "Invalid pageType"
