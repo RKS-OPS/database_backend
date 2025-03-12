@@ -9,7 +9,7 @@ get:
           schema:
             type: array
             items:
-              $ref: "../schemas/Project.yaml"
+              $ref: "../../schemas/Project.yaml"
 post:
   summary: Create a new project
   operationId: createProject
@@ -18,7 +18,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: "../schemas/Project.yaml"
+          $ref: "../../schemas/Project.yaml"
   responses:
     "201":
       description: Project created
