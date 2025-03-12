@@ -1,4 +1,4 @@
-const { getAllProjects } = require("../models/projects");
+const { getAllProjects, searchProjectIds } = require("../models/projects");
 
 // Get all projects
 exports.getAllProjects = async (req, res) => {
@@ -47,9 +47,26 @@ exports.updateProjectById = (req, res) => {
   );
 };
 
+// Get a list of partial match project IDs
+exports.searchProjectIds = async (req, res) => {
+  let { id } = req.query;
+  let result = await searchProjectIds(id);
+  res.send(result);
+};
+
 // Delete a project by ID
 exports.deleteProjectById = (req, res) => {
   const projectId = req.params.id;
   // Simulate deleting a project from the database
   res.send(`Project with ID: ${projectId} deleted`);
+};
+
+// Create a note for a project by ID
+exports.createProjectNoteById = (req, res) => {
+  const projectId = req.params.id;
+  const newNote = req.body;
+  // Simulate adding a note to a project in the database
+  res.send(
+    `Note added to project with ID: ${projectId}: ${JSON.stringify(newNote)}`
+  );
 };

@@ -6,7 +6,9 @@ servers:
   - url: http://localhost:3000/api
 paths:
   /projects:
-    $ref: "./paths/projects.yaml"
+    $ref: "./paths/projects/index.yaml"
+  /projects/searchIds:
+    $ref: "./paths/projects/searchIds.yaml"
   /users:
     $ref: "./paths/users.yaml"
   /locations:

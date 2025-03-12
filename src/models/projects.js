@@ -1,4 +1,4 @@
-const db = require('../configs/postgres'); // Import the database connection
+const db = require("../configs/postgres"); // Import the database connection
 
 // Fetch all projects from the database
 const getAllProjects = async () => {
@@ -6,14 +6,36 @@ const getAllProjects = async () => {
     // Call the PostgreSQL function to fetch project data
     // const test = await db.query(`SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'JVN_DB_SYSTEM';`)
     // console.log('test', test)
-    const result = await db.query('SELECT * FROM "JVN_DB_SYSTEM"."func_jvn_get_intake_projects_data"();');
+    const result = await db.query(
+      'SELECT * FROM "JVN_DB_SYSTEM"."func_jvn_get_intake_projects_data"();'
+    );
     return result.rows; // Return the rows fetched by the query
   } catch (err) {
-    console.error('Error fetching projects:', err.message);
+    console.error("Error fetching projects:", err.message);
     throw err; // Throw the error to be handled by the caller
+  }
+};
+
+const searchProjectIds = async (id) => {
+  try {
+    const query = `
+      SELECT "JPI_Project_ID" 
+      FROM "JVN_DB_SYSTEM"."TBL_INTAKE_PROJECT_DATA"
+      WHERE "JPI_Project_ID" ILIKE $1
+    `;
+
+    const values = [`%${id}%`]; // Using % for partial match
+
+    const result = await db.query(query, values);
+
+    return result.rows.map((row) => row.JPI_Project_ID); // Return array of IDs
+  } catch (err) {
+    console.error("Error fetching project IDs:", err.message);
+    throw err;
   }
 };
 
 module.exports = {
   getAllProjects,
+  searchProjectIds,
 };
