@@ -1,14 +1,65 @@
 type: object
 properties:
-  id:
+  projectId:
     type: string
-  name:
-    type: string
-  description:
+    description: Unique identifier for the project
+
+  projectName:
     type: string
     nullable: true
+    description: Name of the project
+
+  waitingOn:
+    type: string
+    nullable: true
+    description: The contact the project is waiting on
+
+  waitingFor:
+    type: string
+    nullable: true
+    description: What the project is waiting for
+
   status:
     type: string
     nullable: true
+    description: Current status of the project
+
+  priority:
+    type: string
+    nullable: true
+    description: Priority level of the project
+
+  intakesFormStatus:
+    type: string
+    nullable: true
+    description: Status of the intake form
+
+  onOpsList:
+    type: boolean
+    nullable: true
+    description: Whether the project is on the operations list
+
+  lastComm:
+    type: string
+    format: date
+    nullable: true
+    description: Last communication date (YYYY-MM-DD)
+
+  projectSponsor:
+    type: string
+    nullable: true
+    description: Name of the project sponsor
+
+  dateAdded:
+    type: string
+    format: date-time
+    nullable: true
+    description: Timestamp when the project was added
+
+  implemented:
+    type: boolean
+    nullable: true
+    description: Whether the project has been implemented
+
 required:
-  - name
+  - projectId
