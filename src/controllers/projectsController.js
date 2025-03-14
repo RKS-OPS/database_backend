@@ -3,18 +3,45 @@ const { getAllProjects, searchProjectIds } = require("../models/projects");
 // Get all projects
 exports.getAllProjects = async (req, res) => {
   try {
-    const projects = await getAllProjects(); // Call the model function
-    const data = projects.map((p) => {
+    let { id, status, startDate, endDate, page, limit } = req.query || {};
+
+    // because there are special characters in the status query param
+    if (status) {
+      status = decodeURIComponent(status);
+    }
+
+    const data = await getAllProjects({
+      id,
+      status,
+      startDate,
+      endDate,
+      page,
+      limit,
+    });
+
+    const mappedProjects = data.projects.map((p) => {
       return {
-        id: p.out_jpd_id.toString(),
-        name: p.out_jpd_name,
-        description: p?.out_jpd_description,
-        status: p.out_jpd_current_project_status,
+        projectId: p.JPI_Project_ID.toString(),
+        projectName: p.JPI_Project_Name,
+        waitingOn: p.JPI_Waiting_on_Contact,
+        waitingFor: p.JPI_Waiting_For,
+        status: p.JPI_Status,
+        priority: p.JPI_Priority,
+        intakesFormStatus: p.JPI_Intake_From_Status,
+        onOpsList: p.JPI_On_Opp_List,
+        lastComm: p.JPI_Last_Comm_date,
+        projectSponsor: p.JPI_Project_Sponsor,
+        dateAdded: p.JPI_Trans_Insert_TS,
+        implemented: p.JPI_Implemented,
       };
     });
-    // console.log('data', data);
-    res.json(data); // Send the fetched data as JSON
+
+    res.json({
+      projects: mappedProjects,
+      totalCount: data.totalCount,
+    });
   } catch (err) {
+    console.log(err);
     console.error("Error in getAllProjects controller:", err.message);
     res.status(500).send("Failed to fetch projects"); // Send error response
   }

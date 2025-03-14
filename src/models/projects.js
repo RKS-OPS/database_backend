@@ -1,20 +1,68 @@
 const db = require("../configs/postgres"); // Import the database connection
 
 // Fetch all projects from the database
-const getAllProjects = async () => {
+
+const getAllProjects = async ({
+  id,
+  status,
+  startDate,
+  endDate,
+  page = 1,
+  limit = 10,
+} = {}) => {
   try {
-    // Call the PostgreSQL function to fetch project data
-    // const test = await db.query(`SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'JVN_DB_SYSTEM';`)
-    // console.log('test', test)
-    const result = await db.query(
-      'SELECT * FROM "JVN_DB_SYSTEM"."func_jvn_get_intake_projects_data"();'
-    );
-    return result.rows; // Return the rows fetched by the query
+    // Validate pagination
+    page = Math.max(1, page); // Ensure page is at least 1
+    limit = Math.min(Math.max(1, limit), 100); // Ensure limit is between 1 and 100
+
+    // Base query for getting filtered results
+    let baseQuery = `FROM "JVN_DB_SYSTEM"."TBL_INTAKE_PROJECT_DATA" WHERE 1=1`;
+    let queryParams = [];
+    let paramIndex = 1;
+
+    // Apply Filters Dynamically
+    if (id) {
+      baseQuery += ` AND "JPI_Project_ID" ILIKE $${paramIndex++}`;
+      queryParams.push(`%${id}%`); // Partial match
+    }
+
+    if (status) {
+      baseQuery += ` AND "JPI_Intake_From_Status" = $${paramIndex++}`;
+      queryParams.push(status);
+    }
+
+    if (startDate) {
+      baseQuery += ` AND "JPI_Trans_Insert_TS" >= $${paramIndex++}`;
+      queryParams.push(startDate);
+    }
+
+    if (endDate) {
+      baseQuery += ` AND "JPI_Requested_Completion_Date" <= $${paramIndex++}`;
+      queryParams.push(endDate);
+    }
+
+    // Query for total count
+    const countQuery = `SELECT COUNT(*) ${baseQuery}`;
+    const countResult = await db.query(countQuery, queryParams);
+    const totalCount = parseInt(countResult.rows[0].count, 10); // Convert to integer
+
+    // Query for paginated data
+    // TODO:should ordered by JPI_TRANS_ID
+    const dataQuery = `SELECT * ${baseQuery} ORDER BY "JPI_TRANS_ID" DESC LIMIT $${paramIndex++} OFFSET $${paramIndex}`;
+    queryParams.push(limit, (page - 1) * limit);
+    const result = await db.query(dataQuery, queryParams);
+
+    return {
+      projects: result.rows,
+      totalCount, // Include total count in response
+    };
   } catch (err) {
     console.error("Error fetching projects:", err.message);
     throw err; // Throw the error to be handled by the caller
   }
 };
+
+module.exports = { getAllProjects };
 
 const searchProjectIds = async (id) => {
   try {
