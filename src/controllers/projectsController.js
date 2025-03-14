@@ -3,23 +3,21 @@ const { getAllProjects, searchProjectIds } = require("../models/projects");
 // Get all projects
 exports.getAllProjects = async (req, res) => {
   try {
-    let {
-      id,
-      status,
-      startDate,
-      endDate,
-      page = 1,
-      limit = 10,
-    } = req.query || {};
+    let { id, status, startDate, endDate, page, limit } = req.query || {};
 
-    const data = await getAllProjects(
+    // because there are special characters in the status query param
+    if (status) {
+      status = decodeURIComponent(status);
+    }
+
+    const data = await getAllProjects({
       id,
       status,
       startDate,
       endDate,
       page,
-      limit
-    );
+      limit,
+    });
 
     const mappedProjects = data.projects.map((p) => {
       return {

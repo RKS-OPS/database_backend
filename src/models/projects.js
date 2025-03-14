@@ -27,7 +27,7 @@ const getAllProjects = async ({
     }
 
     if (status) {
-      baseQuery += ` AND "JPI_Project_Status" = $${paramIndex++}`;
+      baseQuery += ` AND "JPI_Intake_From_Status" = $${paramIndex++}`;
       queryParams.push(status);
     }
 
@@ -47,6 +47,7 @@ const getAllProjects = async ({
     const totalCount = parseInt(countResult.rows[0].count, 10); // Convert to integer
 
     // Query for paginated data
+    // TODO:should ordered by JPI_TRANS_ID
     const dataQuery = `SELECT * ${baseQuery} ORDER BY "JPI_TRANS_ID" DESC LIMIT $${paramIndex++} OFFSET $${paramIndex}`;
     queryParams.push(limit, (page - 1) * limit);
     const result = await db.query(dataQuery, queryParams);
