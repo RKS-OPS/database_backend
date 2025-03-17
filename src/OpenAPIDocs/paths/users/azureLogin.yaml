@@ -1,0 +1,38 @@
+post:
+  summary: Azure User Login
+  operationId: azureLogin
+  description: Authenticates a user via Azure Login and stores their Azure ID and profile image.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+              description: User's email address (must be associated with Azure like @ontario.ca).
+            azureId:
+              type: string
+              description: Unique Azure ID assigned to the user.
+            image:
+              type: string
+              nullable: true
+              description: Base64-encoded profile image from Azure (optional).
+          required:
+            - email
+            - azureId
+  responses:
+    "200":
+      description: Successfully authenticated user.
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/User.yaml"
+    "400":
+      description: Bad Request - Invalid input or missing required fields.
+    "401":
+      description: Unauthorized - Azure authentication failed.
+    "500":
+      description: Internal Server Error - Failed to process the request.

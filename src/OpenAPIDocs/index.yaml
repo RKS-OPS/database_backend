@@ -10,7 +10,9 @@ paths:
   /projects/searchIds:
     $ref: "./paths/projects/searchIds.yaml"
   /users:
-    $ref: "./paths/users.yaml"
+    $ref: "./paths/users/index.yaml"
+  /users/login:
+    $ref: "./paths/users/azureLogin.yaml"
   /locations:
     $ref: "./paths/locations.yaml"
   /organizations:
