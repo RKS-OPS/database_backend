@@ -16,7 +16,7 @@ get:
           schema:
             type: array
             items:
-              $ref: "../schemas/User.yaml"
+              $ref: "../../schemas/User.yaml"
 post:
   summary: Create a new user
   operationId: createUser
@@ -25,7 +25,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: "../schemas/User.yaml"
+          $ref: "../../schemas/User.yaml"
   responses:
     "201":
       description: user created

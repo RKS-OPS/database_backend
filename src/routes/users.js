@@ -8,5 +8,6 @@ router.post("/", usersController.createUser);
 router.get("/:id", usersController.getUserById);
 router.put("/:id", usersController.updateUserById);
 router.delete("/:id", usersController.deleteUserById);
+router.post("/login", usersController.loginByAzure);
 
 module.exports = router;

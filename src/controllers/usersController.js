@@ -1,3 +1,7 @@
+const { getAllUsers } = require("../models/users");
+
+const { updateUserAzureInfo, getUserByEmail } = require("../models/users");
+
 const users = [
   {
     id: 1,
@@ -42,8 +46,7 @@ const users = [
 ];
 
 exports.getAllUsers = (req, res) => {
-  const { name } = req.query; // Extract the query string from the request query parameters
-  // console.log("Query string:", name);
+  const { name } = req.query;
 
   // If a query string is provided, filter users based on the 'name' containing the query string
   let filteredUsers = users;
@@ -89,4 +92,29 @@ exports.deleteUserById = (req, res) => {
   }
   users.splice(userIndex, 1);
   res.status(204).send(); // 204 No Content
+};
+
+exports.loginByAzure = async (req, res) => {
+  try {
+    const azureId = req.body.azureId;
+    const image = req.body.image ? req.body.image : null;
+    const { email } = req.body;
+
+    await updateUserAzureInfo(email, azureId, image);
+    let user = await getUserByEmail(email);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    } else {
+      user = {
+        id: user.MUD_USER_ID,
+        name: user.MUD_USER_NAME,
+        email: user.MUD_USER_EMAIL,
+        azureId: user.MUD_AZURE_ID,
+      };
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error("Error in loginByAzure controller:", error.message);
+    res.status(500).send("Failed to login by Azure on backend");
+  }
 };
