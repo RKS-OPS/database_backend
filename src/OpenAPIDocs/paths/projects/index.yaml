@@ -62,7 +62,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: "../../schemas/Project.yaml"
+          $ref: "../../schemas/ProjectDetail.yaml"
   responses:
     "201":
       description: Project created
