@@ -1,4 +1,5 @@
-const db = require("../configs/postgres"); // Import the database connection
+const db = require("../configs/postgres");
+const PROJECT_FIELDS = require("./mappingFields/project");
 
 // Fetch all projects from the database
 
@@ -47,7 +48,6 @@ const getAllProjects = async ({
     const totalCount = parseInt(countResult.rows[0].count, 10); // Convert to integer
 
     // Query for paginated data
-    // TODO:should ordered by JPI_TRANS_ID
     const dataQuery = `SELECT * ${baseQuery} ORDER BY "JPI_TRANS_ID" DESC LIMIT $${paramIndex++} OFFSET $${paramIndex}`;
     queryParams.push(limit, (page - 1) * limit);
     const result = await db.query(dataQuery, queryParams);
@@ -83,7 +83,50 @@ const searchProjectIds = async (id) => {
   }
 };
 
+const createProject = async (newProject) => {
+  try {
+    // Project Table
+    // Get only valid fields from newProject
+    const keys = Object.keys(newProject).filter(
+      (key) => newProject[key] !== undefined && newProject[key] !== null
+    );
+    if (keys.length === 0) throw new Error("No valid fields provided");
+    console.log(keys);
+    // Convert JS object keys to DB column names
+    const columns = keys.map((key) => `"${PROJECT_FIELDS[key]}"`).join(", ");
+    const values = keys.map((_, index) => `$${index + 1}`).join(", ");
+    const queryValues = keys.map((key) => newProject[key]);
+    // Insert the new project into the projects table
+    const projectQuery = `
+      INSERT INTO "TBL_INTAKE_PROJECT_DATA" (${columns})
+      VALUES (${values})
+      RETURNING *;
+    `;
+
+    console.log("projectQuery", projectQuery);
+
+    const result = await db.query(projectQuery, queryValues);
+    console.log(result.rows[0]);
+
+    // client contacts table
+
+    // reference no table
+
+    // noteLog table
+
+    // rooms table
+
+    // Estimated Cost/Fiscal Year
+
+    return result.rows[0]; // Return the newly created project
+  } catch (err) {
+    console.error("Error creating project:", err.message);
+    throw err;
+  }
+};
+
 module.exports = {
   getAllProjects,
   searchProjectIds,
+  createProject,
 };

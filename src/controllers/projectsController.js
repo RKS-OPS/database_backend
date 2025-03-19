@@ -1,4 +1,8 @@
-const { getAllProjects, searchProjectIds } = require("../models/projects");
+const {
+  getAllProjects,
+  searchProjectIds,
+  createProject,
+} = require("../models/projects");
 
 // Get all projects
 exports.getAllProjects = async (req, res) => {
@@ -27,7 +31,7 @@ exports.getAllProjects = async (req, res) => {
         waitingFor: p.JPI_Waiting_For,
         status: p.JPI_Status,
         priority: p.JPI_Priority,
-        intakesFormStatus: p.JPI_Intake_From_Status,
+        intakeFormStatus: p.JPI_Intake_From_Status,
         onOpsList: p.JPI_On_Opp_List,
         lastComm: p.JPI_Last_Comm_date,
         projectSponsor: p.JPI_Project_Sponsor,
@@ -49,10 +53,17 @@ exports.getAllProjects = async (req, res) => {
 };
 
 // Create a new project
-exports.createProject = (req, res) => {
-  const newProject = req.body;
-  // Simulate adding a new project to the database
-  res.status(201).send(`Project created: ${JSON.stringify(newProject)}`);
+exports.createProject = async (req, res) => {
+  try {
+    const newProjectData = req.body;
+    console.log(newProjectData);
+    const result = await createProject(newProjectData);
+  } catch (error) {}
+
+  // const id = result.rows[0].JPI_Project_ID;
+  // res.json({
+  //   projectId: id,
+  // });
 };
 
 // Get a project by ID
