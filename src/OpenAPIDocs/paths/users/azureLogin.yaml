@@ -29,7 +29,13 @@ post:
       content:
         application/json:
           schema:
-            $ref: "../../schemas/User.yaml"
+            type: object
+            properties:
+              user:
+                $ref: "../../schemas/User.yaml"
+              token:
+                type: string
+                description: JWT token for the authenticated user to call api endpoints.
     "400":
       description: Bad Request - Invalid input or missing required fields.
     "401":

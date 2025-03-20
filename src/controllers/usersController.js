@@ -1,5 +1,5 @@
-const { getAllUsers } = require("../models/users");
-
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = process.env.JWT_SECRET_KEY;
 const { updateUserAzureInfo, getUserByEmail } = require("../models/users");
 
 const users = [
@@ -112,7 +112,10 @@ exports.loginByAzure = async (req, res) => {
         azureId: user.MUD_AZURE_ID,
       };
     }
-    return res.status(200).json(user);
+
+    const token = jwt.sign(user, SECRET_KEY, { expiresIn: "30d" });
+
+    return res.status(200).json({ user, token });
   } catch (error) {
     console.error("Error in loginByAzure controller:", error.message);
     res.status(500).send("Failed to login by Azure on backend");
