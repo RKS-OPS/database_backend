@@ -20,6 +20,11 @@ paths:
   /dropdowns:
     $ref: "./paths/dropdowns.yaml"
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Project:
       $ref: "./schemas/Project.yaml"
