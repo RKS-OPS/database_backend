@@ -1,8 +1,8 @@
 const db = require("../configs/postgres");
 const PROJECT_FIELDS = require("./mappingFields/project");
+const dbService = require("../service/dbService");
 
 // Fetch all projects from the database
-
 const getAllProjects = async ({
   id,
   status,
@@ -62,8 +62,6 @@ const getAllProjects = async ({
   }
 };
 
-module.exports = { getAllProjects };
-
 const searchProjectIds = async (id) => {
   try {
     const query = `
@@ -85,40 +83,25 @@ const searchProjectIds = async (id) => {
 
 const createProject = async (newProject) => {
   try {
-    // Project Table
-    // Get only valid fields from newProject
+    // Get only valid fields that exist in PROJECT_FIELDS and are not undefined/nullt
     const keys = Object.keys(newProject).filter(
-      (key) => newProject[key] !== undefined && newProject[key] !== null
+      (key) =>
+        PROJECT_FIELDS[key] &&
+        newProject[key] !== undefined &&
+        newProject[key] !== null
     );
-    if (keys.length === 0) throw new Error("No valid fields provided");
-    console.log(keys);
     // Convert JS object keys to DB column names
     const columns = keys.map((key) => `"${PROJECT_FIELDS[key]}"`).join(", ");
     const values = keys.map((_, index) => `$${index + 1}`).join(", ");
-    const queryValues = keys.map((key) => newProject[key]);
+    const value = keys.map((key) => newProject[key]);
     // Insert the new project into the projects table
-    const projectQuery = `
+    const query = `
       INSERT INTO "TBL_INTAKE_PROJECT_DATA" (${columns})
       VALUES (${values})
       RETURNING *;
     `;
 
-    console.log("projectQuery", projectQuery);
-
-    const result = await db.query(projectQuery, queryValues);
-    console.log(result.rows[0]);
-
-    // client contacts table
-
-    // reference no table
-
-    // noteLog table
-
-    // rooms table
-
-    // Estimated Cost/Fiscal Year
-
-    return result.rows[0]; // Return the newly created project
+    return (await dbService.query(query, value)).rows[0];
   } catch (err) {
     console.error("Error creating project:", err.message);
     throw err;
