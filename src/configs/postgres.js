@@ -31,5 +31,7 @@ pool.on("error", (err) => {
 
 // export the query method for passing queries to the pool
 module.exports = {
+  // export the pool object for transactions purposes
+  pool,
   query: (text, params) => pool.query(text, params),
 };
