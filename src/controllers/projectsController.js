@@ -3,6 +3,10 @@ const {
   searchProjectIds,
   createProject,
 } = require("../models/projects");
+const { createClientContacts } = require("../models/clientContacts");
+const { createAssocRefNums } = require("../models/accosReferences");
+const { createEstimatedCosts } = require("../models/estimatedCosts");
+const dbService = require("../service/dbService");
 
 // Get all projects
 exports.getAllProjects = async (req, res) => {
@@ -49,21 +53,64 @@ exports.getAllProjects = async (req, res) => {
     console.error("Error in getAllProjects controller:", err.message);
     res.status(500).send("Failed to fetch projects"); // Send error response
   }
-  // res.send("List of all projects from the controller");
 };
 
-// Create a new project
 exports.createProject = async (req, res) => {
   try {
     const newProjectData = req.body;
-    console.log(newProjectData);
-    const result = await createProject(newProjectData);
-  } catch (error) {}
 
-  // const id = result.rows[0].JPI_Project_ID;
-  // res.json({
-  //   projectId: id,
-  // });
+    // Projects table
+    const createdProject = await dbService.transaction(async () => {
+      const project = await createProject(newProjectData);
+      if (newProjectData.clientContacts?.length) {
+        // Client contacts table
+        await createClientContacts({
+          projectIdValue: project.JPI_Project_ID,
+          clientContacts: newProjectData.clientContacts,
+          createUserId: req.user.id,
+        });
+      }
+
+      if (newProjectData.assocReferenceNos?.length) {
+        // Assoc reference number table
+        await createAssocRefNums({
+          projectId: project.JPI_Project_ID,
+          refNos: newProjectData.assocReferenceNos,
+          createUserId: req.user.id,
+        });
+      }
+      // TODO: Logic to be confirmed
+      // rooms table
+      // if (newProjectData.rooms?.length) {
+      //   await createProjectRooms({
+      //     projectIdValue: project.JPI_Project_ID,
+      //     rooms: newProjectData.rooms,
+      //     createUserId: req.user.id,
+      //   });
+      // }
+
+      // Estimated Cost/Fiscal Year table
+      if (newProjectData.estimatedCosts?.length) {
+        await createEstimatedCosts({
+          projectId: project.JPI_Project_ID,
+          estimatedCosts: newProjectData.estimatedCosts,
+          createUserId: req.user.id,
+        });
+      }
+
+      return {
+        id: project.JPI_TRANS_ID,
+        projectId: project.JPI_Project_ID,
+      };
+    });
+    res.json({
+      id: createdProject.id,
+      projectId: createdProject.projectId,
+    });
+  } catch (error) {
+    console.log("error", error);
+    res.status(500).send("Failed to create project");
+  }
 };
 
 // Get a project by ID
