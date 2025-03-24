@@ -29,7 +29,7 @@ properties:
     nullable: true
     description: Priority level of the project
 
-  intakesFormStatus:
+  intakeFormStatus:
     type: string
     nullable: true
     description: Status of the intake form

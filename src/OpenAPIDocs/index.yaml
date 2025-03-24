@@ -3,7 +3,7 @@ info:
   title: My API
   version: 1.0.0
 servers:
-  - url: http://localhost:3000/backend-api
+  - url: http://localhost:3001/backend-api
 paths:
   /projects:
     $ref: "./paths/projects/index.yaml"
@@ -20,6 +20,11 @@ paths:
   /dropdowns:
     $ref: "./paths/dropdowns.yaml"
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Project:
       $ref: "./schemas/Project.yaml"

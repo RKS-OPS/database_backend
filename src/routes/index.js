@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authenticateToken = require("../middleware/auth");
 const projectRoutes = require("./projects");
 const userRoutes = require("./users");
 const locationRoutes = require("./locations");
@@ -11,7 +12,7 @@ router.get("/", (req, res) => {
 });
 
 // Register Routes
-router.use("/projects", projectRoutes);
+router.use("/projects", authenticateToken, projectRoutes);
 router.use("/users", userRoutes);
 router.use("/locations", locationRoutes);
 router.use("/organizations", organizationRoutes);

@@ -1,0 +1,92 @@
+type: object
+allOf:
+  - $ref: "./Project.yaml" # Import all properties from Project.yaml
+  - type: object
+    properties:
+      description:
+        type: string
+        nullable: true
+        description: Detailed project description
+      deadline:
+        type: string
+        format: date
+        nullable: true
+        description: Project deadline
+      firstContactDate:
+        type: string
+        format: date
+        nullable: true
+        description: Date of first contact
+      alias:
+        type: string
+        nullable: true
+        description: Project alias
+      assignedTo:
+        oneOf:
+          - type: string
+            description: ID of the person assigned to the project
+            nullable: true
+          - $ref: "./User.yaml"
+        description: Either a user ID (string) or a full User object
+      clientMinistry:
+        type: string
+        nullable: true
+        description: Ministry the project is for
+      folderName:
+        type: string
+        nullable: true
+        description: Name of the project folder
+      fundingSource:
+        type: string
+        nullable: true
+        description: Source of funding
+      locationId:
+        type: integer
+        nullable: true
+        description: Location ID
+      ministry:
+        type: string
+        nullable: true
+        description: Ministry the project is for
+      division:
+        type: string
+        nullable: true
+        description: Division the project is for
+      branch:
+        type: string
+        nullable: true
+        description: Branch the project is for
+      requestedCompletionDate:
+        type: string
+        format: date
+        nullable: true
+        description: Requested completion date
+      assignedToPM:
+        type: boolean
+        nullable: true
+        description: Whether the project is assigned to a project manager
+      clientContacts:
+        type: array
+        items:
+          $ref: "./User.yaml"
+        nullable: true
+        description: List of client contacts
+      assocReferenceNos:
+        type: array
+        items:
+          type: string
+        nullable: true
+        description: Associated reference numbers
+      estimatedCosts:
+        type: array
+        items:
+          type: object
+          properties:
+            year:
+              type: integer
+              description: Year of the estimated cost
+            cost:
+              type: number
+              description: Estimated cost
+        nullable: true
+        description: List of estimated costs

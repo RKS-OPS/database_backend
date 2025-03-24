@@ -1,7 +1,8 @@
-const db = require("../configs/postgres"); // Import the database connection
+const db = require("../configs/postgres");
+const PROJECT_FIELDS = require("./mappingFields/project");
+const dbService = require("../service/dbService");
 
 // Fetch all projects from the database
-
 const getAllProjects = async ({
   id,
   status,
@@ -47,7 +48,6 @@ const getAllProjects = async ({
     const totalCount = parseInt(countResult.rows[0].count, 10); // Convert to integer
 
     // Query for paginated data
-    // TODO:should ordered by JPI_TRANS_ID
     const dataQuery = `SELECT * ${baseQuery} ORDER BY "JPI_TRANS_ID" DESC LIMIT $${paramIndex++} OFFSET $${paramIndex}`;
     queryParams.push(limit, (page - 1) * limit);
     const result = await db.query(dataQuery, queryParams);
@@ -61,8 +61,6 @@ const getAllProjects = async ({
     throw err; // Throw the error to be handled by the caller
   }
 };
-
-module.exports = { getAllProjects };
 
 const searchProjectIds = async (id) => {
   try {
@@ -83,7 +81,35 @@ const searchProjectIds = async (id) => {
   }
 };
 
+const createProject = async (newProject) => {
+  try {
+    // Get only valid fields that exist in PROJECT_FIELDS and are not undefined/nullt
+    const keys = Object.keys(newProject).filter(
+      (key) =>
+        PROJECT_FIELDS[key] &&
+        newProject[key] !== undefined &&
+        newProject[key] !== null
+    );
+    // Convert JS object keys to DB column names
+    const columns = keys.map((key) => `"${PROJECT_FIELDS[key]}"`).join(", ");
+    const values = keys.map((_, index) => `$${index + 1}`).join(", ");
+    const value = keys.map((key) => newProject[key]);
+    // Insert the new project into the projects table
+    const query = `
+      INSERT INTO "TBL_INTAKE_PROJECT_DATA" (${columns})
+      VALUES (${values})
+      RETURNING *;
+    `;
+
+    return (await dbService.query(query, value)).rows[0];
+  } catch (err) {
+    console.error("Error creating project:", err.message);
+    throw err;
+  }
+};
+
 module.exports = {
   getAllProjects,
   searchProjectIds,
+  createProject,
 };
