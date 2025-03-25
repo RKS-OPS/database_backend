@@ -15,20 +15,6 @@ const startServer = async () => {
     // Load and resolve OpenAPI documentation
     const swaggerDocument = await SwaggerParser.validate(apiSpecPath);
 
-    // Serve Swagger UI
-    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-    // Middleware: Parse incoming JSON requests
-    app.use(express.json());
-
-    // Load OpenAPI Validator
-    app.use(
-      OpenApiValidator.middleware({
-        apiSpec: swaggerDocument, // Use the resolved document
-        validateRequests: true,
-        validateResponses: true,
-      })
-    );
     const allowedOrigins = [
       "http://localhost:3000",
       "https://database-frontend-test.vercel.app",
@@ -43,9 +29,29 @@ const startServer = async () => {
         }
       },
       credentials: true,
+      allowedHeaders: ["Authorization", "Content-Type"],
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     };
 
     app.use(cors(corsOptions));
+
+    // ✅ Handle preflight requests
+    app.options("*", cors(corsOptions));
+
+    // Parse JSON payloads
+    app.use(express.json());
+
+    // Load OpenAPI Validator
+    app.use(
+      OpenApiValidator.middleware({
+        apiSpec: swaggerDocument, // Use the resolved document
+        validateRequests: true,
+        validateResponses: true,
+      })
+    );
+
+    // Serve Swagger UI
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
     // Use routes
     // because the frontend use /api already to the Azure sign in auth route
