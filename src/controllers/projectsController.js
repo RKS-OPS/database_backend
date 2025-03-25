@@ -59,6 +59,8 @@ exports.createProject = async (req, res) => {
   try {
     const newProjectData = req.body;
 
+    console.log("req body", req.body);
+
     // Projects table
     const createdProject = await dbService.transaction(async () => {
       const project = await createProject(newProjectData);

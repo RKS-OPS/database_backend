@@ -23,7 +23,7 @@ allOf:
         description: Project alias
       assignedTo:
         oneOf:
-          - type: string
+          - type: integer
             description: ID of the person assigned to the project
             nullable: true
           - $ref: "./User.yaml"
