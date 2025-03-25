@@ -18,6 +18,7 @@ const startServer = async () => {
     const allowedOrigins = [
       "http://localhost:3000",
       "https://database-frontend-test.vercel.app",
+      "https://intra.dev.jvn.jus.gov.on.ca",
     ];
 
     const corsOptions = {
