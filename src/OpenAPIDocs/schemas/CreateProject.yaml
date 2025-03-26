@@ -22,8 +22,11 @@ allOf:
         nullable: true
         description: Project alias
       assignedTo:
-        $ref: "./User.yaml"
-        nullable: true
+        oneOf:
+          - type: integer
+            description: ID of the person assigned to the project
+            nullable: true
+          - $ref: "./User.yaml"
         description: Either a user ID (string) or a full User object
       clientMinistry:
         type: string
@@ -37,10 +40,10 @@ allOf:
         type: string
         nullable: true
         description: Source of funding
-      location:
-        type: object
-        $ref: "./Location.yaml"
+      locationId:
+        type: integer
         nullable: true
+        description: Location ID
       ministry:
         type: string
         nullable: true
@@ -71,14 +74,7 @@ allOf:
       assocReferenceNos:
         type: array
         items:
-          type: object
-          properties:
-            id:
-              type: integer
-              description: ID of the associated reference number
-            assocReferenceNo:
-              type: string
-              description: Reference number
+          type: string
         nullable: true
         description: Associated reference numbers
       estimatedCosts:
@@ -86,9 +82,6 @@ allOf:
         items:
           type: object
           properties:
-            id:
-              type: integer
-              description: ID of the estimated cost
             year:
               type: integer
               description: Year of the estimated cost
@@ -97,23 +90,3 @@ allOf:
               description: Estimated cost
         nullable: true
         description: List of estimated costs
-      noteLogs:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: integer
-              description: ID of the note log
-            description:
-              type: string
-              description: Note
-            timestamp:
-              type: string
-              format: date
-              description: Date of the note
-            user:
-              $ref: "./User.yaml"
-              description: User who created the note
-        nullable: true
-        description: List of note logs

@@ -2,11 +2,13 @@ const {
   getAllProjects,
   searchProjectIds,
   createProject,
+  getProjectById,
 } = require("../models/projects");
 const { createClientContacts } = require("../models/clientContacts");
 const { createAssocRefNums } = require("../models/accosReferences");
 const { createEstimatedCosts } = require("../models/estimatedCosts");
 const dbService = require("../service/dbService");
+const PROJECT_FIELDS = require("../models/mappingFields/project");
 
 // Get all projects
 exports.getAllProjects = async (req, res) => {
@@ -116,10 +118,17 @@ exports.createProject = async (req, res) => {
 };
 
 // Get a project by ID
-exports.getProjectById = (req, res) => {
+exports.getProjectById = async (req, res) => {
   const projectId = req.params.id;
-  // Simulate fetching a project by ID from the database
-  res.send(`Details of project with ID: ${projectId}`);
+  const rawData = await getProjectById(projectId);
+  console.log("rawData", rawData);
+  if (!rawData || !rawData.project) {
+    return res.status(404).json({ message: "Project not found" });
+  }
+
+  const mappedProject = mapProjectData(rawData);
+  console.log("mappedProject", mappedProject);
+  res.send(mappedProject);
 };
 
 // Update a project by ID
@@ -156,4 +165,42 @@ exports.createProjectNoteById = (req, res) => {
   res.send(
     `Note added to project with ID: ${projectId}: ${JSON.stringify(newNote)}`
   );
+};
+
+/*Local Helper Functions*/
+const mapProjectData = (data) => {
+  const {
+    project,
+    rooms,
+    noteLogs,
+    clientContacts,
+    assocReferenceNos,
+    estimatedCosts,
+  } = data;
+  console.log("data", data);
+  // Pull all flat fields using PROJECT_FIELDS
+  const mapped = Object.entries(PROJECT_FIELDS).reduce(
+    (acc, [key, dbField]) => {
+      acc[key] = project[dbField] ?? null;
+      return acc;
+    },
+    {}
+  );
+
+  // Add the custom/nested fields
+  mapped.assignedTo =
+    project.assignedTo && Object.keys(project.assignedTo).length > 0
+      ? project.assignedTo
+      : null;
+  mapped.location =
+    project.location && Object.keys(project.location).length > 0
+      ? project.location
+      : null;
+  mapped.clientContacts = clientContacts ?? [];
+  mapped.rooms = rooms ?? [];
+  mapped.noteLogs = noteLogs ?? [];
+  mapped.assocReferenceNos = assocReferenceNos ?? [];
+  mapped.estimatedCosts = estimatedCosts ?? [];
+  console.log("mapped", mapped);
+  return mapped;
 };
