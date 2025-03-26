@@ -1,0 +1,119 @@
+type: object
+allOf:
+  - $ref: "./Project.yaml" # Import all properties from Project.yaml
+  - type: object
+    properties:
+      description:
+        type: string
+        nullable: true
+        description: Detailed project description
+      deadline:
+        type: string
+        format: date
+        nullable: true
+        description: Project deadline
+      firstContactDate:
+        type: string
+        format: date
+        nullable: true
+        description: Date of first contact
+      alias:
+        type: string
+        nullable: true
+        description: Project alias
+      assignedTo:
+        $ref: "./User.yaml"
+        nullable: true
+        description: Either a user ID (string) or a full User object
+      clientMinistry:
+        type: string
+        nullable: true
+        description: Ministry the project is for
+      folderName:
+        type: string
+        nullable: true
+        description: Name of the project folder
+      fundingSource:
+        type: string
+        nullable: true
+        description: Source of funding
+      location:
+        type: object
+        $ref: "./Location.yaml"
+        nullable: true
+      ministry:
+        type: string
+        nullable: true
+        description: Ministry the project is for
+      division:
+        type: string
+        nullable: true
+        description: Division the project is for
+      branch:
+        type: string
+        nullable: true
+        description: Branch the project is for
+      requestedCompletionDate:
+        type: string
+        format: date
+        nullable: true
+        description: Requested completion date
+      assignedToPM:
+        type: boolean
+        nullable: true
+        description: Whether the project is assigned to a project manager
+      clientContacts:
+        type: array
+        items:
+          $ref: "./User.yaml"
+        nullable: true
+        description: List of client contacts
+      assocReferenceNos:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: ID of the associated reference number
+            assocReferenceNo:
+              type: string
+              description: Reference number
+        nullable: true
+        description: Associated reference numbers
+      estimatedCosts:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: ID of the estimated cost
+            year:
+              type: integer
+              description: Year of the estimated cost
+            cost:
+              type: number
+              description: Estimated cost
+        nullable: true
+        description: List of estimated costs
+      noteLogs:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: ID of the note log
+            description:
+              type: string
+              description: Note
+            timestamp:
+              type: string
+              format: date
+              description: Date of the note
+            user:
+              $ref: "./User.yaml"
+              description: User who created the note
+        nullable: true
+        description: List of note logs

@@ -52,7 +52,7 @@ properties:
 
   dateAdded:
     type: string
-    format: date-time
+    format: date
     nullable: true
     description: Timestamp when the project was added
 

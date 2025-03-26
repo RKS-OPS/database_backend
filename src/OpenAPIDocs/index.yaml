@@ -7,6 +7,8 @@ servers:
 paths:
   /projects:
     $ref: "./paths/projects/index.yaml"
+  /projects/{id}:
+    $ref: "./paths/projects/id.yaml"
   /projects/searchIds:
     $ref: "./paths/projects/searchIds.yaml"
   /users:

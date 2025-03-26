@@ -6,5 +6,7 @@ properties:
     type: string
   image:
     type: string
+    nullable: true
+
 required:
   - name

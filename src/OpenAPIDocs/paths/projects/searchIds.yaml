@@ -1,4 +1,6 @@
 get:
+  tags:
+    - Projects
   summary: Search for partial match project Ids
   operationId: searchProjectIds
   parameters:

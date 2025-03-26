@@ -108,8 +108,20 @@ const createProject = async (newProject) => {
   }
 };
 
+const getProjectById = async (projectId) => {
+  try {
+    return (
+      await dbService.query("SELECT get_project_details($1)", [projectId])
+    ).rows[0].get_project_details;
+  } catch (err) {
+    console.error("Error fetching project by ID:", err.message);
+    throw err;
+  }
+};
+
 module.exports = {
   getAllProjects,
   searchProjectIds,
   createProject,
+  getProjectById,
 };

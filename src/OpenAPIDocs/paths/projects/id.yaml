@@ -1,0 +1,41 @@
+get:
+  tags:
+    - Projects
+  summary: Get project by ID
+  description: Returns a single project
+  operationId: getProjectById
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: A project
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/ProjectDetail.yaml"
+    "404":
+      description: Project not found
+    "403":
+      description: Forbidden - Invalid token
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+    "401":
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
