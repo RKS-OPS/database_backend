@@ -63,8 +63,34 @@ const getUserByEmail = async (email) => {
   return result.rows[0];
 };
 
+const searchUsersByNamePrefix = async (prefix) => {
+  try {
+    const result = await db.query(
+      `SELECT "MUD_USER_ID" AS id, "MUD_USER_NAME" AS name,
+       "MUD_IMAGE" AS image
+       FROM "MST_JVN_USER_DETAILS"
+       WHERE LOWER("MUD_USER_NAME") LIKE LOWER($1)
+       ORDER BY "MUD_USER_NAME"
+       LIMIT 10`,
+      [prefix + "%"]
+    );
+    let data = result.rows.map((row) => {
+      // convert image buffer to base64 string
+      if (row.image && Buffer.isBuffer(row.image)) {
+        row.image = `data:image/png;base64,${row.image.toString("base64")}`;
+      }
+      return row;
+    });
+    return data;
+  } catch (error) {
+    console.error("Error in searchUsersByNamePrefix model:", error.message);
+    throw error;
+  }
+};
+
 module.exports = {
   getAllUsers,
   updateUserAzureInfo,
   getUserByEmail,
+  searchUsersByNamePrefix,
 };

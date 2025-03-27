@@ -1,6 +1,10 @@
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
-const { updateUserAzureInfo, getUserByEmail } = require("../models/users");
+const {
+  updateUserAzureInfo,
+  getUserByEmail,
+  searchUsersByNamePrefix,
+} = require("../models/users");
 
 const users = [
   {
@@ -59,6 +63,22 @@ exports.getAllUsers = (req, res) => {
   res.status(200).json(filteredUsers);
 };
 
+exports.searchUsersByNamePrefix = async (req, res) => {
+  const { prefix } = req.query;
+
+  if (!prefix) {
+    return [];
+  }
+
+  try {
+    const users = await searchUsersByNamePrefix(prefix);
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error in searchUserByNamePrefix controller:", error.message);
+    res.status(500).send("Failed to search user by name prefix on backend");
+  }
+};
+
 exports.createUser = (req, res) => {
   const newUser = {
     id: users.length + 1,
@@ -69,6 +89,7 @@ exports.createUser = (req, res) => {
 };
 
 exports.getUserById = (req, res) => {
+  console.log("getUserById", req.params.id);
   const user = users.find((u) => u.id === parseInt(req.params.id));
   if (!user) {
     return res.status(404).json({ message: "User not found" });
