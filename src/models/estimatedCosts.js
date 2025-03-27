@@ -15,12 +15,11 @@ const createEstimatedCosts = async ({
     if (!estimatedCosts || estimatedCosts.length === 0) {
       throw new Error("No estimated costs provided.");
     }
-
     // Generate placeholders dynamically for PostgreSQL (e.g., ($1, $2, $3), ($4, $5, $6), ...)
     const values = [];
     const placeholders = estimatedCosts
       .map((_, index) => {
-        const baseIndex = index * 3; // Each row has 3 values
+        const baseIndex = index * 4; // Each row has 4 values
         values.push(
           projectId,
           estimatedCosts[index].year,
@@ -46,4 +45,21 @@ const createEstimatedCosts = async ({
     throw error;
   }
 };
-module.exports = { createEstimatedCosts };
+
+const deleteEsimateCostsByProjectId = async (projectId) => {
+  try {
+    const query = `
+      DELETE FROM "${tableName}"
+      WHERE "${projectIdField}" = $1
+    `;
+
+    await dbService.query(query, [projectId]);
+
+    return;
+  } catch (error) {
+    console.error("Error deleting estimated costs:", error.message);
+    throw error;
+  }
+};
+
+module.exports = { createEstimatedCosts, deleteEsimateCostsByProjectId };

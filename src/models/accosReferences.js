@@ -15,7 +15,7 @@ const createAssocRefNums = async ({ projectId, refNos, createUserId }) => {
     const placeholders = refNos
       .map((_, index) => {
         const baseIndex = index * 3; // Each row has 3 values
-        values.push(projectId, refNos[index], createUserId);
+        values.push(projectId, refNos[index].assocReferenceNo, createUserId);
         return `($${baseIndex + 1}, $${baseIndex + 2}, $${baseIndex + 3})`;
       })
       .join(", ");
@@ -32,4 +32,20 @@ const createAssocRefNums = async ({ projectId, refNos, createUserId }) => {
     throw error;
   }
 };
-module.exports = { createAssocRefNums };
+
+const deleteAssocRefNumsByProjectId = async (projectId) => {
+  try {
+    const query = `
+      DELETE FROM "${tableName}"
+      WHERE "${projectIdField}" = $1
+    `;
+
+    await dbService.query(query, [projectId]);
+    return;
+  } catch (error) {
+    console.error("Error deleting assocReferenceNo:", error.message);
+    throw error;
+  }
+};
+
+module.exports = { createAssocRefNums, deleteAssocRefNumsByProjectId };

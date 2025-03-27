@@ -119,9 +119,55 @@ const getProjectById = async (projectId) => {
   }
 };
 
+const updateProjectById = async (projectId, updatedProjectData) => {
+  try {
+    // Step1. Modify some field to match the database
+    // assignedTo we only need the ID
+    if (updatedProjectData.assignedTo) {
+      updatedProjectData.assignedTo = updatedProjectData.assignedTo.id;
+    }
+    // location we only need the ID
+    if (updatedProjectData.location) {
+      updatedProjectData.locationId = updatedProjectData.location.id;
+    }
+    // Step2. Take out data for other tables
+    const rooms = updatedProjectData.rooms;
+    const noteLogs = updatedProjectData.noteLogs;
+    const clientContacts = updatedProjectData.clientContacts;
+    const assocReferenceNos = updatedProjectData.assocReferenceNos;
+    const estimatedCosts = updatedProjectData.estimatedCosts;
+    // Step3. Take out data for the main project table
+    // Get only valid fields that exist in PROJECT_FIELDS and are not undefined/nullt
+    const keys = Object.keys(updatedProjectData).filter(
+      (key) =>
+        PROJECT_FIELDS[key] &&
+        updatedProjectData[key] !== undefined &&
+        updatedProjectData[key] !== null
+    );
+    // Convert JS object keys to DB column names
+    const columns = keys.map((key) => `"${PROJECT_FIELDS[key]}"`).join(", ");
+    const values = keys.map((_, index) => `$${index + 1}`).join(", ");
+    const value = keys.map((key) => updatedProjectData[key]);
+    // Insert the new project into the projects table
+    const query = `
+      UPDATE "TBL_INTAKE_PROJECT_DATA"
+      SET (${columns}) = (${values})
+      WHERE "JPI_Project_ID" = $${keys.length + 1}
+      RETURNING *;
+    `;
+    await dbService.query(query, [...value, projectId]);
+
+    // return (await dbService.query(query, values)).rows[0];
+  } catch (err) {
+    console.error("Error updating project by ID:", err.message);
+    throw err;
+  }
+};
+
 module.exports = {
   getAllProjects,
   searchProjectIds,
   createProject,
   getProjectById,
+  updateProjectById,
 };
