@@ -3,10 +3,20 @@ const {
   searchProjectIds,
   createProject,
   getProjectById,
+  updateProjectById,
 } = require("../models/projects");
-const { createClientContacts } = require("../models/clientContacts");
-const { createAssocRefNums } = require("../models/accosReferences");
-const { createEstimatedCosts } = require("../models/estimatedCosts");
+const {
+  createClientContacts,
+  deleteClientContactsByProjectId,
+} = require("../models/clientContacts");
+const {
+  createAssocRefNums,
+  deleteAssocRefNumsByProjectId,
+} = require("../models/accosReferences");
+const {
+  createEstimatedCosts,
+  deleteEsimateCostsByProjectId,
+} = require("../models/estimatedCosts");
 const dbService = require("../service/dbService");
 const PROJECT_FIELDS = require("../models/mappingFields/project");
 
@@ -121,26 +131,84 @@ exports.createProject = async (req, res) => {
 exports.getProjectById = async (req, res) => {
   const projectId = req.params.id;
   const rawData = await getProjectById(projectId);
-  console.log("rawData", rawData);
+
   if (!rawData || !rawData.project) {
     return res.status(404).json({ message: "Project not found" });
   }
 
   const mappedProject = mapProjectData(rawData);
-  console.log("mappedProject", mappedProject);
+
   res.send(mappedProject);
 };
 
 // Update a project by ID
-exports.updateProjectById = (req, res) => {
-  const projectId = req.params.id;
-  const updatedProject = req.body;
-  // Simulate updating a project in the database
-  res.send(
-    `Project with ID: ${projectId} updated with data: ${JSON.stringify(
-      updatedProject
-    )}`
-  );
+exports.updateProjectById = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const updatedProject = req.body;
+
+    const rooms = updatedProject.rooms;
+    const noteLogs = updatedProject.noteLogs;
+    const clientContacts = updatedProject.clientContacts;
+    const assocReferenceNos = updatedProject.assocReferenceNos;
+    const estimatedCosts = updatedProject.estimatedCosts;
+
+    await dbService.transaction(async () => {
+      // Update the project
+      await updateProjectById(projectId, updatedProject);
+
+      // Update the client contacts
+      if (clientContacts) {
+        // delete all client contacts
+        await deleteClientContactsByProjectId(projectId);
+        // create new client contacts
+        if (clientContacts.length > 0) {
+          await createClientContacts({
+            projectIdValue: projectId,
+            clientContacts,
+            createUserId: req.user.id,
+          });
+        }
+      }
+
+      // Update the assoc reference numbers
+      if (assocReferenceNos) {
+        // delete all assoc reference numbers
+        await deleteAssocRefNumsByProjectId(projectId);
+        // create new assoc reference numbers
+        if (assocReferenceNos.length > 0) {
+          await createAssocRefNums({
+            projectId,
+            refNos: assocReferenceNos,
+            createUserId: req.user.id,
+          });
+        }
+      }
+
+      // Update the estimated costs
+      if (estimatedCosts) {
+        // delete all estimated costs
+        await deleteEsimateCostsByProjectId(projectId);
+        // create new estimated costs
+        if (estimatedCosts.length > 0) {
+          await createEstimatedCosts({
+            projectId,
+            estimatedCosts,
+            createUserId: req.user.id,
+          });
+        }
+
+        // TODO
+        // Update the rooms
+        // Update the note logs
+      }
+    });
+
+    res.send("Project updated successfully");
+  } catch (error) {
+    console.log("error", error);
+    res.status(500).send("Failed to update project");
+  }
 };
 
 // Get a list of partial match project IDs
@@ -177,7 +245,6 @@ const mapProjectData = (data) => {
     assocReferenceNos,
     estimatedCosts,
   } = data;
-  console.log("data", data);
   // Pull all flat fields using PROJECT_FIELDS
   const mapped = Object.entries(PROJECT_FIELDS).reduce(
     (acc, [key, dbField]) => {
@@ -186,7 +253,6 @@ const mapProjectData = (data) => {
     },
     {}
   );
-
   // Add the custom/nested fields
   mapped.assignedTo =
     project.assignedTo && Object.keys(project.assignedTo).length > 0
@@ -201,6 +267,6 @@ const mapProjectData = (data) => {
   mapped.noteLogs = noteLogs ?? [];
   mapped.assocReferenceNos = assocReferenceNos ?? [];
   mapped.estimatedCosts = estimatedCosts ?? [];
-  console.log("mapped", mapped);
+
   return mapped;
 };

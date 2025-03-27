@@ -37,4 +37,21 @@ const createClientContacts = async ({
     throw error;
   }
 };
-module.exports = { createClientContacts };
+
+const deleteClientContactsByProjectId = async (projectIdValue) => {
+  try {
+    const query = `
+      DELETE FROM "${tableName}"
+      WHERE "${projectId}" = $1
+    `;
+
+    await dbService.query(query, [projectIdValue]);
+
+    return;
+  } catch (error) {
+    console.error("Error deleting client contacts:", error.message);
+    throw error;
+  }
+};
+
+module.exports = { createClientContacts, deleteClientContactsByProjectId };

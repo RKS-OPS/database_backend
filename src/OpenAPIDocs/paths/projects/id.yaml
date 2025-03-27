@@ -39,3 +39,44 @@ get:
             properties:
               message:
                 type: string
+put:
+  tags:
+    - Projects
+  summary: update project by ID
+  description: update a single project
+  operationId: updateProjectById
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: A project
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/ProjectDetail.yaml"
+    "404":
+      description: Project not found
+    "403":
+      description: Forbidden - Invalid token
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+    "401":
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
