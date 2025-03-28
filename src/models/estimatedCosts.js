@@ -1,4 +1,3 @@
-const e = require("cors");
 const dbService = require("../service/dbService");
 const ESTIMATE_COST_FIELDS = require("./mappingFields/estimatedCost");
 
